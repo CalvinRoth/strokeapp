@@ -51,6 +51,8 @@ class StrokeFinder:
 			m_mag = np.linalg.norm(m_vec)
 
 			##Getting Eyes data
+			##The counters seem like a dumb waste of time but they exist
+			##to more easily allow any changes
 			x_mid, y_mid = 0,0
 			counter = 0
 			for (x,y) in shape[36:40]:
@@ -72,9 +74,6 @@ class StrokeFinder:
 
 			dot = (m_vec[0]*e_vec[0]) + (m_vec[1] * e_vec[1])
 			angle = np.arccos(dot/(e_mag * m_mag))
-			# loop over the face parts individually
-
-			print("Angle: " + str(angle))
 
 		self.getCondition(angle)
 
@@ -85,9 +84,9 @@ class StrokeFinder:
 			app for further testing''')
 		else:
 			##Login?
-			pass
+			print("For debug: You pass")
 
 
-if('__name__' == '__main__'):
-	p1 = StrokeFinder('shape_predictor_68_face_landmarks.dat')
-	p1.getAngle('images/happy-person.jpg')
+print("Start:")
+p1 = StrokeFinder('shape_predictor_68_face_landmarks.dat')
+p1.getAngle('stroke_images/stroke4.jpg')
