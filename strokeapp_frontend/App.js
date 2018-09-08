@@ -1,7 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableHighlight,
+  Image,
+  Text,
+} from 'react-native';
 import { Constants } from 'expo';
 import { createStackNavigator } from 'react-navigation'; 
+// import Camera from 'react-native-camera';
+// import CameraRoute from './CameraRoute';
+import CameraExample from './CameraExample';
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -29,11 +39,23 @@ class HomeScreen extends React.Component {
   }
 }
 
+
 class CameraScreen extends React.Component {
 	static navigationOptions = {
     title: '',
   	header: null //this will hide the header
   };
+  constructor(props){
+    super(props);
+    this.state = {
+      showCamera : false
+    }
+    this.handlePress = this.handlePress.bind(this);
+  }
+
+  handlePress(){
+    this.setState({showCamera: !this.state.showCamera});
+  }
 
   render() {
     return (
@@ -42,11 +64,16 @@ class CameraScreen extends React.Component {
         QStroke
         </Text>
         <Text style={styles.paragraph}>
-        *icon of a camera here*
+         {/* <Image
+         style={{width: 90, height: 90}}
+         source={require('./camera.png')}
+         /> */}
+         {/* <CameraRoute showCamera = {this.state.showCamera}/> */}
+         <CameraExample showCamera = {this.state.showCamera}/>
         </Text>
         <TouchableHighlight
          style={styles.button}
-         onPress={() => this.props.navigation.navigate('Speech')}
+         onPress={this.handlePress}
         >
          <Text style={styles.buttontext}> CAMERA TEST </Text>
         </TouchableHighlight>
@@ -54,6 +81,8 @@ class CameraScreen extends React.Component {
     );
   }
 }
+
+
 
 const RootStack = createStackNavigator(
   {
