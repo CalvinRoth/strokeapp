@@ -4,7 +4,6 @@
 # import the necessary packages
 from imutils import face_utils
 import numpy as np
-import argparse
 import imutils
 import dlib
 import cv2
@@ -75,17 +74,18 @@ class StrokeFinder:
 			dot = (m_vec[0]*e_vec[0]) + (m_vec[1] * e_vec[1])
 			angle = np.arccos(dot/(e_mag * m_mag))
 
-		return self.getCondition(angle)
+		self.getCondition(angle)
 
 
 	def getCondition(self, angle):
 		if(angle > 0.055):
-			return 'You may be currently having a stroke, please proceed to QStroke app for further testing'
+			print('''You may be currently having a stroke, please proceed to QStroke
+			app for further testing''')
 		else:
 			##Login?
-			return "For debug: You pass"
+			print("For debug: You pass")
 
 
 print("Start:")
 p1 = StrokeFinder('shape_predictor_68_face_landmarks.dat')
-p1.getAngle('stroke_images/stroke3.jpg')
+p1.getAngle('stroke_images/example_02.jpg')
