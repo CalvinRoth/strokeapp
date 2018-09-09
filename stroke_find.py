@@ -75,18 +75,17 @@ class StrokeFinder:
 			dot = (m_vec[0]*e_vec[0]) + (m_vec[1] * e_vec[1])
 			angle = np.arccos(dot/(e_mag * m_mag))
 
-		self.getCondition(angle)
+		return self.getCondition(angle)
 
 
 	def getCondition(self, angle):
 		if(angle > 0.055):
-			print('''You may be currently having a stroke, please proceed to QStroke
-			app for further testing''')
+			return 'You may be currently having a stroke, please proceed to QStroke app for further testing'
 		else:
 			##Login?
-			print("For debug: You pass")
+			return "For debug: You pass"
 
 
 print("Start:")
 p1 = StrokeFinder('shape_predictor_68_face_landmarks.dat')
-p1.getAngle('stroke_images/stroke4.jpg')
+p1.getAngle('stroke_images/stroke3.jpg')

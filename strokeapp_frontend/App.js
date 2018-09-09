@@ -6,17 +6,16 @@ import {
   TouchableHighlight,
   Image,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import { Constants } from 'expo';
 import { createStackNavigator } from 'react-navigation'; 
-// import Camera from 'react-native-camera';
-// import CameraRoute from './CameraRoute';
-import CameraExample from './CameraExample';
+import { Camera, Permissions } from 'expo';
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
     title: '',
-  	header: null //this will hide the header
+    header: null //this will hide the header
   };
 
   render() {
@@ -41,21 +40,10 @@ class HomeScreen extends React.Component {
 
 
 class CameraScreen extends React.Component {
-	static navigationOptions = {
+  static navigationOptions = {
     title: '',
-  	header: null //this will hide the header
+    header: null
   };
-  constructor(props){
-    super(props);
-    this.state = {
-      showCamera : false
-    }
-    this.handlePress = this.handlePress.bind(this);
-  }
-
-  handlePress(){
-    this.setState({showCamera: !this.state.showCamera});
-  }
 
   render() {
     return (
@@ -64,16 +52,14 @@ class CameraScreen extends React.Component {
         QStroke
         </Text>
         <Text style={styles.paragraph}>
-         {/* <Image
+         <Image
          style={{width: 90, height: 90}}
          source={require('./camera.png')}
-         /> */}
-         {/* <CameraRoute showCamera = {this.state.showCamera}/> */}
-         <CameraExample showCamera = {this.state.showCamera}/>
+         />
         </Text>
         <TouchableHighlight
          style={styles.button}
-         onPress={this.handlePress}
+         onPress={() => this.props.navigation.navigate('CameraTest')}
         >
          <Text style={styles.buttontext}> CAMERA TEST </Text>
         </TouchableHighlight>
@@ -82,12 +68,118 @@ class CameraScreen extends React.Component {
   }
 }
 
+class CameraTestScreen extends React.Component {
+  takePicture = () => {
+      if (this.camera) {
+          this.camera.takePictureAsync({base64: true})
+              .then((data) => {
+                this.props.navigation.navigate('CameraTestResult', data.base64);
+              })
+      }
+  }
+
+
+  state = {
+    hasCameraPermission: null,
+    type: Camera.Constants.Type.back,
+  };
+
+  async componentWillMount() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === 'granted' });
+  }
+
+  render() {
+    const { hasCameraPermission } = this.state;
+    if (hasCameraPermission === null) {
+      return <View />;
+    } else if (hasCameraPermission === false) {
+      return <Text>No access to camera</Text>;
+    } else {
+      return (
+        <View style={{ flex: 1 }}>
+          <Camera style={{ flex: 1 }} type={this.state.type} ref={ref => {
+            this.camera = ref;
+          }}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'transparent',
+                flexDirection: 'row',
+              }}>
+              <TouchableOpacity
+                style={{
+                  flex: 0.1,
+                  alignSelf: 'flex-end',
+                  alignItems: 'center',
+                }}
+                onPress={() => {
+                  this.setState({
+                    type: this.state.type === Camera.Constants.Type.back
+                      ? Camera.Constants.Type.front
+                      : Camera.Constants.Type.back,
+                  });
+                }}>
+                <Text
+                  style={{ fontSize: 18, color: 'white' }}>
+                  {' '}Flip{' '}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                        onPress={this.takePicture}
+                        style={{ alignSelf: 'center' }}
+                      >
+
+                      <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
+                  {' '}TAKE PICTURE{' '}
+                </Text>
+              </TouchableOpacity>
+              </View>
+          </Camera>
+        </View>
+      );
+    }
+  }
+}
+
+class CameraTestResultScreen extends React.Component {
+  static navigationOptions = {
+    title: '',
+    header: null
+  };
+
+  render() {
+  const base64 = this.props.navigation.state.params;
+  console.log(base64);
+
+fetch('URL HERE', {
+  method: 'POST'})
+    .then((response) => alert(response.json()))
+    .catch((error) => {
+      console.error(error);
+    });
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>
+        QStroke
+        </Text>
+        <Text style={styles.paragraph}>
+        </Text>
+         <Text style={styles.buttontext}> Result here </Text>
+         <Text style={styles.buttontext}> Image here </Text>
+      </View>
+    );
+  }
+}
 
 
 const RootStack = createStackNavigator(
   {
     Home: HomeScreen,
     Camera: CameraScreen,
+    CameraTest: CameraTestScreen,
+    CameraTestResult: CameraTestResultScreen,
   },
   {
     initialRouteName: 'Home',
@@ -132,5 +224,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     padding: 16
-  }
+  },
+  preview: {
+  flex: 1,
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+  height: Dimensions.get('window').height,
+  width: Dimensions.get('window').width
+},
+capture: {
+  flex: 0,
+  backgroundColor: '#fff',
+  borderRadius: 5,
+  color: '#000',
+  padding: 10,
+  margin: 40
+}
+
 });
